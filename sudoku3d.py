@@ -89,16 +89,10 @@ class sudoku3d:
         for var in prefixed:
             useful_vars[var]=-1
         counter = 0
-        print useful_vars[45]
         for i in range(len(useful_vars)):
             if useful_vars[i] >= 0:
                 useful_vars[i] = counter
                 counter+=1
-
-        #for i in range(self.order):
-        #    for j in range(self.order):
-        #        for k in range(self.order):
-        #            print i,j,k, self.variable(i,j,k), useful_vars[self.variable(i,j,k)]
 
         cnff = cnf.CNF_formula(counter-1)
  
