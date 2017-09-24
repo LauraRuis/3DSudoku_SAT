@@ -43,28 +43,38 @@ class sudoku3d:
     def extended_translate_to_CNF(self): # not edited yet, only use optimized for now
         """ Translate to CNF all restrictions with all variales"""
 
-        cnff = cnf.CNF_formula(self.order**3)
-        
-        for i in range(self.order):
-            for j in range(self.order):
-                A = [  self.variable(i,j,k) for k in range(self.order)]
-                cnff.exacly_one(A)# Cell restrictions
-                B = [  self.variable(i,k,j) for k in range(self.order)]
-                cnff.exacly_one(B)# Row restrictions
-                C = [  self.variable(k,i,j) for k in range(self.order)]
-                cnff.exacly_one(C)# Col restrictions
-                if self.sudoku[i][j] != "-1": #Fixed variables restrictions
-                    cnff.addclause([self.variable(i,j,int(self.sudoku[i][j]))])
+        cnff = cnf.CNF_formula(self.order**4)
+        for h in range(self.order):
+            for i in range(self.order):
+                for j in range(self.order):
+                    A = [  self.variable(h, i,j,k) for k in range(self.order)]
+                    cnff.exacly_one(A)# Cell restrictions
+                    B = [  self.variable(h, i,k,j) for k in range(self.order)]
+                    cnff.exacly_one(B)# Row restrictions
+                    C = [  self.variable(h, k,i,j) for k in range(self.order)]
+                    cnff.exacly_one(C)# Col restrictions
+                    #Z restrictions
+                    E = [  self.variable(k, h,i,j) for k in range(self.order)]
+                    cnff.exacly_one(E)
+                    if self.sudoku[h][i][j] != "-1": #Fixed variables restrictions
+                        cnff.addclause([self.variable(h,i,j,int(self.sudoku[h][i][j]))])
 
         #Region restrictions
-        for region in range(self.order):
-            i,j =  (region/self.m)*self.m,(region%self.m)*self.n
-            for num in range(self.order):
-                D = [ self.variable(i+i_inc,j+j_inc,num)  for i_inc in range(self.n)
-                      for j_inc in range(self.m) ]
-                cnff.exacly_one(D)
-        
-        return cnff,[i for i in range((self.order**3)+1)]
+        for h in range(self.order):
+            for region in range(self.order):
+                i,j =  (region/self.m)*self.m,(region%self.m)*self.n
+                for num in range(self.order):
+                    D = [ self.variable(h, i+i_inc,j+j_inc,num)  for i_inc in range(self.n)
+                          for j_inc in range(self.m) ]
+                    cnff.exacly_one(D)
+                    F = [ self.variable(j+j_inc, h, i+i_inc,num)  for i_inc in range(self.n)
+                          for j_inc in range(self.m) ]
+                    cnff.exacly_one(F)
+                    G = [ self.variable(i+i_inc, j+j_inc, h, num)  for i_inc in range(self.n)
+                          for j_inc in range(self.m) ]
+                    cnff.exacly_one(G)
+            
+            return cnff,[i for i in range((self.order**4)+1)]
 
     def optimized_translate_to_CNF(self):
         """Translate to CNF with only the unknow variables"""
@@ -89,10 +99,16 @@ class sudoku3d:
         for var in prefixed:
             useful_vars[var]=-1
         counter = 0
+        print useful_vars[45]
         for i in range(len(useful_vars)):
             if useful_vars[i] >= 0:
                 useful_vars[i] = counter
                 counter+=1
+
+        #for i in range(self.order):
+        #    for j in range(self.order):
+        #        for k in range(self.order):
+        #            print i,j,k, self.variable(i,j,k), useful_vars[self.variable(i,j,k)]
 
         cnff = cnf.CNF_formula(counter-1)
  
