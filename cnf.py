@@ -50,8 +50,6 @@ class CNF_formula:
         or regular encoding depending with its length
         """
         if len(B) == 1: self.clauses.append([B[0]])
-        elif len(B) > 7: #Regular encoding O(n )
-            self.regular_encoding_exacly_one(B)
         else:# Normal encoding O(n**2)
             self.at_least_one(B)
             self.at_most_one(B)

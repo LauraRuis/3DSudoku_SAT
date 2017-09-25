@@ -6,6 +6,7 @@ import sys
 import signal
 import time
 import sudoku3d
+import math
 
 
 #Definig Parse
@@ -14,7 +15,7 @@ parser = argparse.ArgumentParser(description='Sudoku Solver', prog='sudokusolver
 #Add arguments
 parser.add_argument('sudokufile', action='store', default="sudoku-5x5.pls", help='Text file with Sudoku problem definition')
 parser.add_argument('-o','--output', action='store', default="output.cnf", help='Output file for cnf formula')
-parser.add_argument('-e','--encoding', action='store', default="optimized", help='Encoding Method{extended|optimized}')
+parser.add_argument('-e','--encoding', action='store', default="extended", help='Encoding Method{extended|optimized}')
 parser.add_argument('-solve', action='store_true', help='Call SatSolver and pretty print solution (need glucose_1.0 compiled in ./gucose_1.0)')
 parser.add_argument('-crypto', action='store_true', help='Call cryptominisolver & pretty print')
 parser.add_argument('-test', action='store_true', help='Make test')
@@ -99,12 +100,13 @@ def execute_glucose():
 		if args.solve: print_solution(output[3:-1])
 	else: print "UNSATISFABLE"
 
-
+	
 def execute_crypto():
-	output = subprocess.Popen(['cryptominisat5', '--verb', '0',args.output],stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].split()
+	output = subprocess.Popen(['cryptominisat5', '--verb', '10',args.output],stdout=subprocess.PIPE,stderr=subprocess.PIPE).communicate()[0].split()
 	output = [ x for x in output if x != 'v' ]
-	if output[1] == 'SATISFIABLE':
-		print_solution(output[2:-1])
+	if 'SATISFIABLE' in output:
+		output_index = output.index("SATISFIABLE")
+		print_solution(output[output_index + 1:-1])
 	else: print "UNSATISFABLE"
 
 

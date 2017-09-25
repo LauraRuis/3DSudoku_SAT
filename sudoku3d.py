@@ -149,4 +149,3 @@ class sudoku3d:
                   if G != []:cnff.exacly_one(G) 
 
         return cnff,useful_vars
-
