@@ -40,7 +40,7 @@ class CNF_formula:
 
     def at_most_one(self,B):
         for combination in itertools.combinations(range(len(B)),2):
-            self.clauses.append([(-1)*B[combination[0]],(-1)*B[combination[1]]])	
+            self.clauses.append([(-1)*B[combination[0]],(-1)*B[combination[1]]])
 
     def addclause(self,cl):
         self.clauses.append(cl)
@@ -49,13 +49,10 @@ class CNF_formula:
         """ Exacly one restriction. Choose between normal encoding
         or regular encoding depending with its length
         """
-        if len(B) == 1: 
-		self.clauses.append([B[0]]) 
-        
+        if len(B) == 1: self.clauses.append([B[0]])
         else:# Normal encoding O(n**2)
             self.at_least_one(B)
             self.at_most_one(B)
-	
 
 
     def regular_encoding_exacly_one(self,B):
@@ -74,5 +71,4 @@ class CNF_formula:
             self.clauses.extend([[negate(B[i]),R[i]],
                         [negate(B[i]), negate(R[i+1])],
                         [negate(R[i]),R[i+1],B[i]]])
-	
 
